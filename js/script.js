@@ -43,6 +43,7 @@ function    _draw(){
     function reset(){
         head.style.left=`0px`;
         head.style.top=`0px`;
+        score=0;
         
     }
 
