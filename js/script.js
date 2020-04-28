@@ -72,7 +72,6 @@ function move(direction){
         }
     }
     if(direction.keyCode===39){
-        
         head.style.left=`${posX+15}px`;
         if(head.offsetLeft>435){
             alert("loser");
