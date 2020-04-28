@@ -15,9 +15,7 @@ function    _draw(){
         p.innerHTML=`score:${score}`;
         p.style.color="black";
         p.style.textAlign="center";
-        document.body.append(p);
-
-        
+        document.body.append(p);    
     }
 
     function drawApple(){
@@ -83,7 +81,7 @@ function move(direction){
     }
     if(direction.keyCode===40){
         head.style.top=`${posY+15}px`;
-        if(head.offsetLeft>435){
+        if(head.offsetTop>435){
             alert("loser");
             reset();
             
