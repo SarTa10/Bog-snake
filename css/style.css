@@ -1,0 +1,31 @@
+body{
+    background-color:#375;
+}
+
+#box{
+    width:450px;
+    height:450px;
+    display:block;
+    margin:5px auto;
+        background-color: white;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.snake-cube{
+    position: absolute;
+    background-color:blue;
+    width:15px;
+    height:15px;
+    /*border:1px solid white;*/
+
+    
+}
+
+.apple{
+    position: absolute;
+    background-color:red;
+    width:15px;
+    height:15px;
+    
+}
