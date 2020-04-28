@@ -1,17 +1,17 @@
-
-let p;
+localStorage.setItem("highScore",0);
+let highScore=localStorage.getItem("highScore");//for highscore
+let p;//for curent score
 let score = 0;
-let apple;
-let xSpeed=0;
-let ySpeed=0;
-let direction=39;
-
-let trail=[];
-
-
+let apple;//for apple
+const direction=39;//start direction
+let trail=[];//array of snake
+let head;//for snake head
+let pausable = true;
+let speed=5;
+let totalScore=0
 
 function    drawHead(){
-      let head= document.createElement("div");
+       head= document.createElement("div");
         head.classList.add("snake-cube");
         document.getElementById("box").append(head);
         trail.push(head);
@@ -27,7 +27,7 @@ function    drawHead(){
     }
 function writeScore(){
     p=document.createElement("p");
-    p.innerHTML=`score:${score}`;
+    p.innerHTML=`score:${totalScore}`;
     p.style.color="black";
     p.style.textAlign="center";
     document.body.append(p); 
@@ -41,116 +41,142 @@ function writeScore(){
         apple.style.top=`${Math.floor(Math.random()*435/15)*15}px`
         document.getElementById("box").append(apple);
 
-        if(trail[0].offsetLeft===apple.offsetLeft&&trail[0].offsetTop===apple.offsetTop){
+        if(head.offsetLeft===apple.offsetLeft&&head.offsetTop===apple.offsetTop){
             removeApple();
             drawApple();
         }
     }
 
-    function deleteDead(){
-        for(let i=1;i<trail.length;i++)
-            trail[i].classList.add("hidden");
+
+    function end(){
+        alert("loser");
+        clearInterval(moving);
+        updateScore();
+        if(score>highScore){
+            alert("congrats u have high score!"+ totalScore +", highscore was:" + highScore )
+            localStorage["highScore"]=totalScore;
+            highScore=localStorage.getItem("highScore");
+        }
+        reset();
+        speed=5;
+        totalScore=0;
+        score*=0;
     }
+  
 
     function removeApple(){
         let rApple=document.getElementById("apple");
         rApple.remove();
     }
 
-    function resetScore(){
-        score*=0;
-    }
-
     function reset(){
-        trail[0].style.left=`0px`;
-        trail[0].style.top=`0px`;
-        trail=[trail[0]];     
+        for(let i=0;i<trail.length;i++){
+           if(i==0){ 
+        head.style.left=`0px`;
+        head.style.top=`0px`;            
+    }
+    else 
+        trail[i].style.display="none";
     }
 
+    trail.splice(1);
+    console.log(trail);
+    
+}
 
 function move(direction){
-    let posX=trail[0].offsetLeft;
-    let posY=trail[0].offsetTop;
+    let posX=head.offsetLeft;
+    let posY=head.offsetTop;
     let aX=apple.offsetLeft;
     let aY=apple.offsetTop;
-    
-    if(direction.keyCode===37){
-        trail[0].style.left=`${posX-15}px`;
-        if(trail[0].offsetLeft<0){
-            resetScore();
-            alert("loser");
-            reset();
-            clearInterval(moving);
-            updateScore()
-            deleteDead();
-        }
+    if(posX===aX&&posY===aY){
+        removeApple();
+      score++;
+      totalScore++;
+      drawApple()
+      updateScore()
+     newSegment();  
     }
-    if(direction.keyCode===38){
-        trail[0].style.top=`${posY-15}px`;
-        if(trail[0].offsetTop<0){
-            resetScore();
-            alert("loser");
-            reset();
-            clearInterval(moving);
-            updateScore();
-            deleteDead();
-
-        }
-    }
-    if(direction.keyCode===39){
-        trail[0].style.left=`${posX+15}px`;
-        if(trail[0].offsetLeft>435){
-            resetScore();
-            alert("loser");
-            reset();
-            clearInterval(moving);
-            updateScore();
-            deleteDead();
-        }
-    }
-    if(direction.keyCode===40){
-        trail[0].style.top=`${posY+15}px`;
-        if(trail[0].offsetTop>435){
-            resetScore(); 
-            alert("loser");
-            reset();
-            clearInterval(moving);
-            updateScore();
-            deleteDead();   
-        }
-    }
-
-  if(posX===aX&&posY===aY){
-      removeApple();
-    score++;
-    drawApple()
-    updateScore()
-
-   
-   newSegment();
-    
-  }
-  for(let i=trail.length-1;i>0;i--)
+    for(let i=trail.length-1;i>0;i--)
   {
       trail[i].style.left=`${trail[i-1].offsetLeft}px`;
       trail[i].style.top=`${trail[i-1].offsetTop}px`;
   }
-  
+
+
+
+    if(direction.keyCode===37){
+        head.style.left=`${posX-15}px`;
+        if(head.offsetLeft<0){
+            end();
+        }
+        
+        for(let i=1;i<trail.length;i++){
+            if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
+                end();
+  }
+    }
+    if(direction.keyCode===38){
+        head.style.top=`${posY-15}px`;
+        if(head.offsetTop<0){
+            end();
+        }
+        
+   for(let i=1;i<trail.length;i++){
+    if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
+        end();
+  }
+    }
+    if(direction.keyCode===39){
+        head.style.left=`${posX+15}px`;
+        if(head.offsetLeft>435){
+            end()
+        }
+        
+   for(let i=1;i<trail.length;i++){
+    if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
+        end();
+  }
+
+
+    }
+    if(direction.keyCode===40){
+        head.style.top=`${posY+15}px`;
+        if(head.offsetTop>435){ 
+            end();
+        }
+        for(let i=1;i<trail.length;i++){
+         if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
+             end();
+       }
+    }
+
+    if(score>=5){
+        speed*=2;
+        score*=0;
+    }
+        
+    
 }
 
 function updateScore(){
-    p.innerHTML=`score: ${score}`;
+    p.innerHTML=`score: ${totalScore}`;
+    localStorage["highScore"]=score
+
 }
-let moving = setInterval(function(){move(direction)},1000/15);
+
+
+let moving = setInterval(function(){move(direction)},1000/speed);
 
 function changeDirection(d){
     clearInterval(moving);
-    moving=setInterval(function(){move(d)},1000/15);
+    moving=setInterval(function(){move(d)},1000/speed);
 }
 
 document.onkeydown = function(e){
     changeDirection(e);
 }
+
 
 
 
