@@ -1,187 +1,55 @@
-localStorage.setItem("highScore",0);
-let highScore=localStorage.getItem("highScore");//for highscore
-let p;//for curent score
-let score = 0;
-let apple;//for apple
-const direction=39;//start direction
-let trail=[];//array of snake
-let head;//for snake head
-let pausable = true;
-let speed=5;
-let totalScore=0
+import {Game} from './snake.js';
 
-function    drawHead(){
-       head= document.createElement("div");
-        head.classList.add("snake-cube");
-        document.getElementById("box").append(head);
-        trail.push(head);
-    }
-    function newSegment(){
-        let newSeg=document.createElement("div");
-        newSeg.classList.add("snake-cube");
-        newSeg.classList.add("new")
-        newSeg.style.left=`${trail[trail.length-1].offsetLeft}px`;
-        newSeg.style.top=`${trail[trail.length-1].offsetTop}px`;
-        document.getElementById("box").append(newSeg); 
-        trail.push(newSeg);
-    }
-function writeScore(){
-    p=document.createElement("p");
-    p.innerHTML=`score:${totalScore}`;
-    p.style.color="black";
-    p.style.textAlign="center";
-    document.body.append(p); 
-}    
+let direction =39;
+let moving;
 
-    function drawApple(){
-        apple=document.createElement("div");
-        apple.classList.add("apple");
-        apple.id="apple";
-        apple.style.left=`${Math.floor(Math.random()*435/15)*15}px`
-        apple.style.top=`${Math.floor(Math.random()*435/15)*15}px`
-        document.getElementById("box").append(apple);
-
-        if(head.offsetLeft===apple.offsetLeft&&head.offsetTop===apple.offsetTop){
-            removeApple();
-            drawApple();
-        }
-    }
+const startBtn = document.getElementById("start");
+const stopBtn = document.getElementById("stop");
+const pauseBtn = document.getElementById("pause");
 
 
-    function end(){
-        alert("loser");
-        clearInterval(moving);
-        updateScore();
-        if(score>highScore){
-            alert("congrats u have high score!"+ totalScore +", highscore was:" + highScore )
-            localStorage["highScore"]=totalScore;
-            highScore=localStorage.getItem("highScore");
-        }
-        reset();
-        speed=5;
-        totalScore=0;
-        score*=0;
-    }
-  
-
-    function removeApple(){
-        let rApple=document.getElementById("apple");
-        rApple.remove();
-    }
-
-    function reset(){
-        for(let i=0;i<trail.length;i++){
-           if(i==0){ 
-        head.style.left=`0px`;
-        head.style.top=`0px`;            
-    }
-    else 
-        trail[i].style.display="none";
-    }
-
-    trail.splice(1);
-    console.log(trail);
-    
+document.onkeydown=function(e){
+    if(Math.abs(direction-e.keyCode) !== 2)
+        if(e.keyCode>36 && e.keyCode<41)
+    direction=e.keyCode;
 }
 
-function move(direction){
-    let posX=head.offsetLeft;
-    let posY=head.offsetTop;
-    let aX=apple.offsetLeft;
-    let aY=apple.offsetTop;
-    if(posX===aX&&posY===aY){
-        removeApple();
-      score++;
-      totalScore++;
-      drawApple()
-      updateScore()
-     newSegment();  
-    }
-    for(let i=trail.length-1;i>0;i--)
-  {
-      trail[i].style.left=`${trail[i-1].offsetLeft}px`;
-      trail[i].style.top=`${trail[i-1].offsetTop}px`;
-  }
+const Snake = new Game()
+Snake._spawnApple();
 
-
-
-    if(direction.keyCode===37){
-        head.style.left=`${posX-15}px`;
-        if(head.offsetLeft<0){
-            end();
-        }
-        
-        for(let i=1;i<trail.length;i++){
-            if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
-                end();
-  }
-    }
-    if(direction.keyCode===38){
-        head.style.top=`${posY-15}px`;
-        if(head.offsetTop<0){
-            end();
-        }
-        
-   for(let i=1;i<trail.length;i++){
-    if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
-        end();
-  }
-    }
-    if(direction.keyCode===39){
-        head.style.left=`${posX+15}px`;
-        if(head.offsetLeft>435){
-            end()
-        }
-        
-   for(let i=1;i<trail.length;i++){
-    if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
-        end();
-  }
-
-
-    }
-    if(direction.keyCode===40){
-        head.style.top=`${posY+15}px`;
-        if(head.offsetTop>435){ 
-            end();
-        }
-        for(let i=1;i<trail.length;i++){
-         if(head.offsetTop===trail[i].offsetTop&&head.offsetLeft===trail[i].offsetLeft)
-             end();
-       }
-    }
-
-    if(score>=5){
-        speed*=2;
-        score*=0;
-    }
-        
-    
-}
-
-function updateScore(){
-    p.innerHTML=`score: ${totalScore}`;
-    localStorage["highScore"]=score
-
-}
-
-
-let moving = setInterval(function(){move(direction)},1000/speed);
-
-function changeDirection(d){
+function stopGame (){
     clearInterval(moving);
-    moving=setInterval(function(){move(d)},1000/speed);
+    Snake._reset();
 }
 
-document.onkeydown = function(e){
-    changeDirection(e);
+function pauseGame(){
+    clearInterval(moving);
 }
 
 
+function startGame(){
+ moving = setInterval(function(){
+    Snake._move(direction);
+    if(Snake._eat()){
+        Snake._grow();
+        Snake._spawnApple();
+        Snake._updateScore();
+    }
+    if(Snake._dead()){
+        Snake._checkHighScore();
+        Snake._reset();
+        Snake._updateScore();
+        direction=39;
+        clearInterval(moving);
+
+    }
+    
+},1000/15)
+}
 
 
-document.addEventListener("DOMContentLoaded",drawHead);
-document.addEventListener("DOMContentLoaded",drawApple);
-document.addEventListener("DOMContentLoaded",writeScore);
+startBtn.addEventListener("click",startGame);
 
+stopBtn.addEventListener("click",stopGame);
 
+pauseBtn.addEventListener("click",pauseGame)

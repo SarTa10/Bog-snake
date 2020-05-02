@@ -22,7 +22,7 @@ body{
     
 }
 
-.apple{
+#apple{
     position: absolute;
     background-color:red;
     width:15px;
@@ -30,24 +30,41 @@ body{
     
 }
 
-.hidden{
-    display:none;
+#score{
+    text-align: center;
+    font-size:40px;
+    color:blue;
 }
 
-
-.button{
-  align-self: center;
-  margin-left:570px;
-
-  width:200px;
-  height:40px;
-
-  background-color:rgb(59,157,159);
-  color:white;
-  font-family:arial;
-  border:none;  
+.buttons{
+    margin-left:530px;
+    justify-content: center;
+    align-items: center;
 }
 
 .button:focus{
+    border:none;
+}
+
+#start{
+    background-color:green;
+    font-size:20px;
+    font-family: arial;
+    color:white;
+    border:none;
+}
+#pause{
+    background-color:yellow;
+    font-size:20px;
+    font-family: arial;
+    color:white;
+    border:none;
+}
+
+#stop{
+    background-color: red;
+    font-size:20px;
+    font-family:arial;
+    color:white;
     border:none;
 }
