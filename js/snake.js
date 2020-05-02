@@ -1,6 +1,12 @@
 localStorage.setItem("highScore",0);
 
 class Game{
+    /*
+                constructor()
+        we are creating head for snake and we are making array for it's body, apple, and scoreboard for our scores.
+        int this constructor we are setting base position for our sanke adn it's body by using this._startPosition() function.
+        at start snake has length of 5
+    */
     constructor(){
         this.head=document.createElement("div");
         this.head.classList.add("snake-cube");
@@ -22,6 +28,10 @@ class Game{
         }
     }
 
+
+        /*
+            this function returns if snake died or not. if snake hits border of the box or eats himself this function @returns true otherwise false
+        */
     _dead(){
         if(this.head.offsetLeft<0||this.head.offsetLeft>435||this.head.offsetTop<0||this.head.offsetTop>435)
             return true;
@@ -33,12 +43,19 @@ class Game{
         return false;
         }
     }
-
+        /*
+            this function set's base position for snake head and also set's the scoreValue to 0
+        */
     _startPosition(){
         this.head.style.left="60px";
         this.head.style.top="0px";
         this.scoreValue=0;
     }
+
+        /*
+            with this function we can track if player hit the high score or not
+            after player dies if his current score will be higher than highscore it will alert message and change the highscore value
+        */
 
     _checkHighScore(){
         if(this.scoreValue>this.highScore)
@@ -49,6 +66,16 @@ class Game{
         }
     }
     
+    /*
+        this is move function which helps snake to move around. at start it set's the position of it's tale.
+        in the switch we give it direction and based on it's value snake move in that direction
+        37 -> left
+        38 -> up
+        39 -> right
+        40 -> down
+
+        by default direction is 39(right)
+    */
     _move(direction){
         for(let i=this.body.length-1;i>0;i--)
         {
@@ -72,6 +99,10 @@ class Game{
         }
     }
 
+    /*
+        one of the main thing in tetris is apple(food). if head's possition is same as apple's positon this function will return true and increase scoreValue by 1
+        if it is not same than it will return false
+    */
     _eat(){
         if(this.head.offsetLeft===this.apple.offsetLeft&&this.head.offsetTop===this.apple.offsetTop)
            {
@@ -81,10 +112,17 @@ class Game{
         return false;
 
     }
+
+    /*
+        here we update score on screen
+    */
     _updateScore(){
         this.score.innerHTML=`Score:${this.scoreValue}`
     }
 
+    /*
+        after snake eats apple we need to respawn new apple by giving it position this function is seting new possition for new apple
+    */
     _spawnApple(){
         let ax=Math.floor(Math.random()*435/15)*15;
         let ay=Math.floor(Math.random()*435/15)*15;
@@ -92,7 +130,10 @@ class Game{
         this.apple.style.left=`${ax}px`;
         this.apple.style.top=`${ay}px`;
     }
-
+    /*
+        after snake eats apple it sould increase it's body
+        here we create new segment for our snake and pushing it into our array
+    */
     _grow(){
         let newSeg=document.createElement("div");
         newSeg.classList.add("snake-cube");
@@ -100,7 +141,12 @@ class Game{
 
         this.body.push(newSeg);
     }
-
+    /*
+    after snake dies game should reset everything
+    snake must have hangth of 5,  it should have base position and scoreValue should be 0 . we are doing it by calling _startPosition();
+    and with for loop
+    if segment is from base length it sould reset it's position otherwise it will delete it from array and from screeen
+    */
     _reset(){
         this._startPosition();
         for(let i=this.body.length-1;i>0;i--)
